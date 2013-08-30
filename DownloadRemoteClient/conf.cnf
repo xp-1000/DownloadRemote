@@ -1,0 +1,6 @@
+#Configuration DownloadRemoteClient
+#Sun Jul 22 20:20:13 CEST 2012
+port=5000
+adresse_ip=192.168.100.253
+manager=PyLoad
+language=Francais
