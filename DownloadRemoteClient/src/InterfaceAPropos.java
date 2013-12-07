@@ -2,15 +2,13 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 
+@SuppressWarnings("serial")
 public class InterfaceAPropos extends JFrame
 {
 	public InterfaceAPropos(JFrame interfaceLiens)
@@ -21,10 +19,10 @@ public class InterfaceAPropos extends JFrame
 		setContentPane(panel);
 		
 		JLabel labImage = new JLabel(new ImageIcon("download_box.png"));
-		JLabel labelTitre = new JLabel("DownloadRemote v1.2.1");
+		JLabel labelTitre = new JLabel("DownloadRemote v1.3");
 		JLabel labelDescription1 = new JLabel("Le logiciel pour commander vos");
 		JLabel labelDescription2 = new JLabel("téléchargements à distance.");
-		JLabel labelC1 = new JLabel("Quentin Manfroi :");
+		JLabel labelC1 = new JLabel("Kiwis Corp :");
 		JLabel labelC2 = new JLabel("Tous droits réservés");
 		labelTitre.setSize(500, 500);
 		this.ajouteComposant(labImage,0,0,1,6);

@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,16 +11,15 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.text.DefaultEditorKit;
 
-import org.omg.CORBA.INTERNAL;
 
-
+@SuppressWarnings("serial")
 public class InterfaceLiens extends JFrame implements ActionListener
 {
 
@@ -28,7 +28,11 @@ public class InterfaceLiens extends JFrame implements ActionListener
 	JTextArea champsLiens = new JTextArea();
 	JButton boutonEnvoyer = new JButton("Envoyer");
 	JButton boutonAnnuler = new JButton("Annuler");
-	JLabel label = new JLabel("Copier vos liens ici :");
+	JButton testConn = new JButton("Tester la connexion");
+	JButton testMngr = new JButton("Tester le gestionnaire");
+	JLabel label = new JLabel("Copiez vos liens ici :");
+	JLabel liStatus = new JLabel("Déconnecté");
+	JLabel liManager = new JLabel(Donnees.manager);
 	JPanel panel = new JPanel();
 	JFrame interfaceLiens = this;
 	
@@ -43,11 +47,37 @@ public class InterfaceLiens extends JFrame implements ActionListener
 		JScrollPane scrollpane = new JScrollPane(champsLiens);
 		panel.add("Center",scrollpane);
 		JPanel panelBoutons = new JPanel();
-		panelBoutons.add(boutonEnvoyer);
 		panelBoutons.add(boutonAnnuler);
+		panelBoutons.add(testConn);
+		panelBoutons.add(testMngr);
+		panelBoutons.add(boutonEnvoyer);
 		panel.add("South",panelBoutons);
 		boutonEnvoyer.addActionListener(this);
 		boutonAnnuler.addActionListener(this);
+		testMngr.addActionListener(this);
+		testConn.addActionListener(this);
+		JPanel panelInfos = new JPanel();
+		panelInfos.setLayout(new GridLayout(5, 2));
+		JLabel lcStatus = new JLabel("Statut :");
+		liStatus.setForeground(Color.red);
+		JLabel lcAddress = new JLabel("Adresse :");
+		JLabel liAddress = new JLabel(Donnees.ip);
+		JLabel lcPort = new JLabel("Port :");
+		JLabel liPort = new JLabel(String.valueOf(Donnees.port));
+		JLabel lcManager = new JLabel("Gestionnaire :");
+		JLabel lcUser = new JLabel("Utilisateur :");
+		JLabel liUser = new JLabel(Donnees.user);
+		panelInfos.add(lcStatus);
+		panelInfos.add(liStatus);
+		panelInfos.add(lcAddress);
+		panelInfos.add(liAddress);
+		panelInfos.add(lcPort);
+		panelInfos.add(liPort);
+		panelInfos.add(lcManager);
+		panelInfos.add(liManager);
+		panelInfos.add(lcUser);
+		panelInfos.add(liUser);
+		panel.add("East",panelInfos);
 		
 		JPopupMenu menu = new JPopupMenu();
 		ActionMap actionMap = champsLiens.getActionMap();
@@ -84,7 +114,7 @@ public class InterfaceLiens extends JFrame implements ActionListener
 		itemPreferences.addActionListener(new ActionListener() 
 		{public void actionPerformed(ActionEvent e) 
 			{
-			InterfacePreferences interfacePreferences = new InterfacePreferences(interfaceLiens);
+				new InterfacePreferences(interfaceLiens);
 			}});
 		JMenu menuAide = new JMenu("?");
 		menuBar.add(menuAide);
@@ -93,15 +123,18 @@ public class InterfaceLiens extends JFrame implements ActionListener
 		itemAPropos.addActionListener(new ActionListener() 
 		{public void actionPerformed(ActionEvent e) 
 			{
-				InterfaceAPropos interfaceAPropos = new InterfaceAPropos(interfaceLiens);
+				new InterfaceAPropos(interfaceLiens);
 			}});
 		this.setJMenuBar(menuBar);
 				
 		setVisible(true);
 		pack();
-		setSize(getSize().width + 500,getSize().height + 300);
+		setSize(getSize().width + 20,getSize().height + 20);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
+        
+        testConnection();
+        testManager();
 	}
 	
 	public void actionPerformed(ActionEvent arg0) 
@@ -148,8 +181,48 @@ public class InterfaceLiens extends JFrame implements ActionListener
 			    		   liens += "www.";
 		    		   }
 	       }
-			this.dispose();
-			client_tcp.envoiLiens(liens);
+			if(client_tcp.getServerStatus())
+			{
+				if(client_tcp.getManagerStatus())
+				{
+					client_tcp.envoiLiens(liens);
+					this.dispose();
+				}
+				else
+					JOptionPane.showMessageDialog(null, "Impossible d'envoyer les liens car " + Donnees.manager + " ne répond pas sur le serveur", "Erreur de gestionnaire externe", JOptionPane.ERROR_MESSAGE);
+			}
+			else
+				JOptionPane.showMessageDialog(null, "Impossible d'envoyer les liens car le serveur DownloadRemote ne répond pas", "Erreur de gestionnaire externe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (arg0.getSource() == testConn)
+		{
+			testConnection();
+		}
+		if (arg0.getSource() == testMngr)
+		{
+			testManager();
+		}
+		
+	}
+
+	private void testManager() {
+		if(client_tcp.getManagerStatus())
+			liManager.setForeground(new Color(0,150,50));
+		else
+			liManager.setForeground(Color.red);
+		
+	}
+
+	private void testConnection() {
+		if(client_tcp.getServerStatus())
+		{
+			liStatus.setForeground(new Color(0,150,50));
+			liStatus.setText("Connecté");
+		}
+		else
+		{
+			liStatus.setForeground(Color.red);
+			liStatus.setText("Déconnecté");
 		}
 	}
 	

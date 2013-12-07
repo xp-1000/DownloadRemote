@@ -2,14 +2,15 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-public class PlainDocumentMajuscule extends PlainDocument {
+@SuppressWarnings("serial")
+public class PlainDocumentStruct extends PlainDocument {
   private int tailleMax = -1;
  
-  public PlainDocumentMajuscule() {
+  public PlainDocumentStruct() {
     this(-1);
   }
  
-  public PlainDocumentMajuscule(int tailleMax) {
+  public PlainDocumentStruct(int tailleMax) {
     this.tailleMax = tailleMax;
   }
  

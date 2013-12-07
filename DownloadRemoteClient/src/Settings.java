@@ -4,15 +4,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
-
 import javax.swing.JOptionPane;
 
-/*
- * Created on Jan 24, 2007
- *
- */
 
 public class Settings {
 	
@@ -21,17 +15,17 @@ public class Settings {
 	
 	public Settings()
 	{
+		// Get Cconfig file path
 		Properties systemProperties = System.getProperties();
 		path = systemProperties.getProperty("java.class.path");
 		path = path.substring(0,path.lastIndexOf("\\")+1) + "conf.cnf";
+		// Get settings from config file
 		try {
-			this.loadProperties(path);
+			this.loadProperties (path);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur Fichier", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Erreur Fichier", JOptionPane.ERROR_MESSAGE);
 		}
@@ -64,10 +58,9 @@ public class Settings {
 	 * @throws FileNotFoundException si le fichier n'a pas été trouvé
 	 * @throws IOException si une erreur est survenue durant la lecture
 	 */
-	public Properties loadProperties(String propertiesFileLocation) throws FileNotFoundException, IOException {
+	public void loadProperties(String propertiesFileLocation) throws FileNotFoundException, IOException {
 		props = new Properties();
 		props.load(new FileInputStream(propertiesFileLocation));
-		return props;
 	}
 
 	
@@ -78,7 +71,7 @@ public class Settings {
 	 * @param props Le fichier à afficher
 	 */
 	public void displayProperties(Properties props) {
-		Iterator it = props.keySet().iterator();
+		Iterator<Object> it = props.keySet().iterator();
 		while (it.hasNext()) {
 			String propertyName = (String) it.next();
 			String propertyValue = props.getProperty(propertyName);
@@ -88,7 +81,7 @@ public class Settings {
 	
 	public String getIp()
 	{
-		return props.getProperty("adresse_ip");
+		return props.getProperty("address");
 	}
 	
 	public String getPort()
@@ -104,11 +97,33 @@ public class Settings {
 		return props.getProperty("manager");
 	}
 	
-	public void setSettings(String ip, String port, String language, String manager) {
-		props.setProperty("adresse_ip", ip);
+	public String getManagerPass() {
+		return props.getProperty("pass");
+		/*String encrypted_pass = props.getProperty("pass");
+		String decrypted_pass="";
+        for (int i=0; i<encrypted_pass.length();i++)  {
+            int c=encrypted_pass.charAt(i)^48; 
+            decrypted_pass=decrypted_pass+(char)c;
+        }
+		return decrypted_pass;*/
+	}
+	
+	public String getManagerUser() {
+		return props.getProperty("user");
+	}
+	
+	public void setSettings(String ip, String port, String language, String manager, String user, String pass) {
+		props.setProperty("address", ip);
 		props.setProperty("port", port);
 		props.setProperty("language", language);
 		props.setProperty("manager", manager);
+		props.setProperty("user", user);
+		String crypte="";
+        for (int i=0; i<pass.length();i++)  {
+            int c=pass.charAt(i)^48; 
+            crypte=crypte+(char)c;
+        }
+		props.setProperty("pass", crypte);
 		try {
 			this.saveProperties(props, path, "Configuration DownloadRemoteClient");
 		} catch (FileNotFoundException e) {
@@ -116,6 +131,21 @@ public class Settings {
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setSettings(String ip, String port, String language, String manager, String user) {
+		props.setProperty("address", ip);
+		props.setProperty("port", port);
+		props.setProperty("language", language);
+		props.setProperty("manager", manager);
+		props.setProperty("user", user);
+		try {
+			this.saveProperties(props, path, "Configuration DownloadRemoteClient");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
